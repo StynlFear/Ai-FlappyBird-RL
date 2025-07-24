@@ -1,70 +1,214 @@
-<a name="readme-top"></a>
+# AI Flappy Bird with Deep Q-Learning (DQN) - Workshop Project
 
-# Implement DQN in PyTorch - Beginner Tutorials
+Welcome to the AI Flappy Bird workshop! This project demonstrates how to train an AI agent to play Flappy Bird using Deep Q-Network (DQN) reinforcement learning algorithm implemented in PyTorch.
 
-This repository contains an implementation of the DQN algorithm from my Deep Q-Learning, aka Deep Q-Network (DQN), YouTube ([@johnnycode](https://www.youtube.com/@johnnycode)) tutorial series. In this series, we code the DQN algorithm from scratch with Python and PyTorch, and then use it to train the Flappy Bird game. If you find the code and tutorials helpful, please consider supporting me:
+## 🎯 Workshop Overview
 
-<a href='https://www.buymeacoffee.com/johnnycode'><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+In this workshop, you'll learn:
+- **Reinforcement Learning fundamentals** - Understanding agents, environments, states, actions, and rewards
+- **Deep Q-Networks (DQN)** - How neural networks can learn optimal game strategies
+- **Experience Replay** - Collecting and learning from past experiences
+- **Epsilon-Greedy Strategy** - Balancing exploration vs exploitation
+- **Target Networks** - Stabilizing training with dual network architecture
+- **PyTorch Implementation** - Building neural networks for RL
 
+## 🚀 Quick Start
 
-If you are brand new to Reinforcement Learning, you may want to start with my Q-Learning tutorials first, then continue on to Deep Q-Learning: https://github.com/johnnycode8/gym_solutions
+### Prerequisites
+- Python 3.8+
+- PyTorch
+- Gymnasium (OpenAI Gym)
+- Flappy Bird Gymnasium environment
 
-## 1. Install FlappyBird Gymnasium & Setup Development Environment
-We'll set up our development environment on VSCode and Conda, and then install Flappy Bird Gymnasium, PyTorch, and Tensorflow (we'll use Tensorflow's TensorBoard to monitor training progress). There are 2 versions of Flappy Bird, one version provides the position of the last pipe, the next pipe, and the bird and the other version that provides RGB (image) frames. The RGB version requires a Convolutional Neural Network, which is more complicated, while the positional values version can be trained using a regular Neural Network. We'll start with the positional version and maybe tackle the RGB version in the future.
+### Installation
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd dqn_pytorch
 
-<a href='https://youtu.be/arR7KzlYs4w&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/arR7KzlYs4w/0.jpg' width='400' alt='Install FlappyBird Gymnasium'/></a>
+# Install required packages
+pip install torch gymnasium flappy-bird-gymnasium pyyaml matplotlib tensorboard
+```
 
-## 2. Implement the Deep Q-Network Module
- A Deep Q-Network is nothing more than a regular Neural Network with fully connected layers. This network is the brain of the bird. What makes this neural network special is that the network's input layer represents the State of the environment and the output layer represents the expected Q-values of the set of Actions. The State is a combination of the position of the last pipe, the next pipe, and the bird. The Action with the highest Q-value is the best Action for a given State.
+### Run a Pre-trained Model
+```bash
+# Test the trained Flappy Bird agent
+python quick_start.py
+```
 
-<a href='https://youtu.be/RVMpm86equc&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/RVMpm86equc/0.jpg' width='400' alt='Implement Deep Q-Network Module'/></a>
+### Train Your Own Agent
+```bash
+# Train on CartPole (quick test - 2-3 minutes)
+python agent.py --env CartPole-v1 --episodes 1000
 
-## 3. Implement Experience Replay & Load Hyperparameters from YAML
-The concept of Experience Replay is to collect a large set of "experiences" so that the DQN can be trained using smaller samples. Experience Replay is essential because we need to show the neural network many examples of similar situations to help it learn general patterns. An "experience" consists of the current state, the action that was taken, the resulting new state, the reward that was received, and a flag to indicate if the new state is terminal. When training, we randomly sample from this memory to ensure diverse training data. We also create a separate hyperparameter file to manage parameters like replay memory size, training batch size, and Epsilon for the Epsilon-Greedy algorithm. This way, we can easily change these parameters for different environments.
+# Train on Flappy Bird (longer training - several hours)
+python agent.py --env FlappyBird-v0 --episodes 50000
+```
 
-<a href='https://youtu.be/y3BSPfmMIkA&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/y3BSPfmMIkA/0.jpg' width='400' alt='Implement Experience Replay'/></a>
+## 📁 Project Structure
 
-## 4. Implement Epsilon-Greedy & Debug the Training Loop
-The Epsilon-Greedy algorithm is use for exploration (bird taking random action) and exploitation (bird taking best known action at the moment). We start by initializing the Epsilon value to 1, so initially, the agent will choose 100% random actions. As the training progresses, we'll slowly decay Epsilon, making the agent more likely to select actions based on its learned policy. We'll also convert all necessary inputs to tensors before feeding them into our PyTorch-implemented DQN, so we could use CUDA (GPU) to train the network.
+```
+dqn_pytorch/
+├── agent.py                    # Main DQN agent implementation
+├── dqn.py                     # Deep Q-Network neural network
+├── experience_replay.py       # Experience replay buffer
+├── hyperparameters.yml        # Training configuration
+├── quick_start.py             # Demo script for pre-trained models
+├── run_comparison.py          # Compare different training strategies
+├── dual_agent_comparison.py   # Compare two agents side-by-side
+└── runs/                      # Training logs and saved models
+    ├── *.pt                   # Trained model weights
+    ├── *.log                  # Training progress logs
+    └── *.png                  # Performance graphs
+```
 
-<a href='https://youtu.be/2zwbCPpp3do&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/2zwbCPpp3do/0.jpg' width='400' alt='Implement Epsilon-Greedy'/></a>
+## 🧠 How It Works
 
-## 5. Implement the Target Network
-Using the DQN module from earlier, we instantiate a Policy Network and a Target Network. The Target Network starts off identical to the Policy Network. The Policy Network represents the brain of the bird; this is the network that we train. The Target Network is used to estimate target Q-values, which is used to train the Policy Network. While it is possible to use the Policy Network to perform the Q-value estimation, the Policy Network is constantly changing during training, so it is more stable to use a Target Network for estimation. After a number of steps (actions), we sync the two networks by copying the Policy Network's weights and biases into the Target Network.
+### 1. Deep Q-Network (DQN)
+The neural network takes the game state as input and outputs Q-values for each possible action:
+- **Input**: Bird position, pipe positions, velocities
+- **Output**: Q-values for "flap" vs "do nothing"
+- **Architecture**: Fully connected layers with ReLU activation
 
-<a href='https://youtu.be/vYRpJo-KMSw&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/vYRpJo-KMSw/0.jpg' width='400' alt='Implement Target Network'/></a>
+### 2. Experience Replay
+The agent stores experiences (state, action, reward, next_state) and learns from random batches:
+- Prevents overfitting to recent experiences
+- Enables more efficient learning
+- Configurable memory size (default: 100,000 experiences)
 
-## 6. Explain Loss, Backpropagation, and Gradient Descent
-In case you are not familar with how Neural Networks learn, this video explains the high-level process. The Loss (using Mean Squared Error function, as an example) measures how far our current policy's Q-values are from our target Q-values. Gradient Descent is used to calculate the slope (gradient) of the loss function, which provides an indication of the direction to adjust the weights and biases to lower loss. Backpropagation is the process of performing Gradient Descent and adjusting the weights and biases in the direction that minimizes the loss.
+### 3. Epsilon-Greedy Exploration
+Balances random exploration with learned behavior:
+- Start with 100% random actions (ε = 1.0)
+- Gradually decrease to 1% random actions (ε = 0.01)
+- Ensures the agent discovers new strategies
 
-<a href='https://youtu.be/DEqh8rgkLcw&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/DEqh8rgkLcw/0.jpg' width='400' alt='Explain Loss, Backpropagation, Gradient Descent'/></a>
+### 4. Target Network
+Uses two identical networks for stable training:
+- **Policy Network**: Updated every step, makes decisions
+- **Target Network**: Updated periodically, provides stable targets
+- Prevents the "moving target" problem
 
-## 7. Optimize Target Network PyTorch Calculations
-In the implementation of the Target Network calculations from earlier, we're looping through a batch of experiences and calculating target Q-values for each one. That code is easy to read and understand, however, it is slow to execute because we're processing each experience one at a time. PyTorch is capable of processing the whole batch at once, which is much more efficient. We'll modify the code to take advantage of PyTorch's computational capabilities.
+## 🎮 Environments
 
-<a href='https://youtu.be/kaXdV1pk8b4&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/kaXdV1pk8b4/0.jpg' width='400' alt='Optimize Target Network PyTorch Calculations'/></a>
+### CartPole-v1 (Beginner)
+- **Goal**: Balance a pole on a cart
+- **Training time**: 2-3 minutes
+- **Perfect for**: Testing your DQN implementation
 
-## 8. Test DQN Algorithm on CartPole-v1
-Reinforcement Learning is fragile as there are many factors that can cause training to fail. We want to make sure that the DQN code we have is bug free. We can test the DQN code on a simple environment that can give us feedback quickly. The Gymnasium Cart Pole environment is perfect for that. Once we are certain that the code is solid, we can finally train Flappy Bird!
+### FlappyBird-v0 (Advanced)
+- **Goal**: Navigate through pipes
+- **Training time**: Several hours to days
+- **Challenging because**: Sparse rewards, precise timing required
 
-<a href='https://youtu.be/Ejv8yv5-i0M&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/Ejv8yv5-i0M/0.jpg' width='400' alt='est DQN Algorithm on CartPole-v1'/></a>
+## 📊 Monitoring Training
 
-## 9. Train DQN Algorithm on Flappy Bird!
-Finally, we can train our DQN algorithm on Flappy Bird! I'll show the results of a 24-hour training session. The bird can fly past quite a few pipe, however, it did not learn to fly indefinitely, that requires perhaps several days of training. I explain why it takes so long to train using DQN.
+### View Real-time Progress
+```bash
+# Start TensorBoard (if using)
+tensorboard --logdir=runs
 
-<a href='https://youtu.be/P7bnuiTVJS8&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/P7bnuiTVJS8/0.jpg' width='400' alt='Train DQN Algorithm on Flappy Bird'/></a>
+# Or check log files
+tail -f runs/flappybird1.log
+```
 
+### Compare Agent Performance
+```bash
+# Compare two training strategies
+python run_comparison.py
 
-## 10. Double DQN Explained and Implemented
-Since the introduction of DQN, there has been many enhancements to the algorithm. Double DQN (DDQN) was the first major enhancement. I explain the concept behind Double DQN using Flappy Bird as an example. The main objective of Double DQN is to reduce the time wasted exploring paths that don't lead to a good outcomes. However, it's important to note that DDQN may not always lead to significant performance gains in all environments.
+# Watch two agents play side-by-side
+python dual_agent_comparison.py
+```
 
-<a href='https://youtu.be/FKOQTdcKkN4&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/FKOQTdcKkN4/0.jpg' width='400' alt='Double DQN Explained and Implemented'/></a>
+## ⚙️ Configuration
 
+Edit `hyperparameters.yml` to experiment with different settings:
 
-## 11. Dueling DQN Explained and Implemented
-Dueling Architecture or Dueling DQN is another enhancement to the DQN algorithm. The main objective of Dueling DQN is to improve training efficiency by splitting the Q-values into two components: Value and Advantages. I explain the concept behind Dueling DQN using Flappy Bird as an example and also implement the Dueling Architecture changes in the DQN module.
+```yaml
+# Learning parameters
+learning_rate: 0.001
+discount_factor: 0.99
+batch_size: 32
 
-<a href='https://youtu.be/3ILECq5qxSk&list=PL58zEckBH8fCMIVzQCRSZVPUp3ZAVagWi'><img src='https://img.youtube.com/vi/3ILECq5qxSk/0.jpg' width='400' alt='Dueling DQN Explained and Implemented'/></a>
+# Exploration
+epsilon_start: 1.0
+epsilon_end: 0.01
+epsilon_decay: 0.995
 
+# Network updates
+target_update_frequency: 1000
+replay_memory_size: 100000
+```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+## 🎯 Workshop Activities
+
+### Beginner Level
+1. **Run the demo** - See a trained agent play Flappy Bird
+2. **Train CartPole** - Quick success to understand the process
+3. **Modify hyperparameters** - See how changes affect learning
+
+### Intermediate Level
+4. **Analyze training curves** - Understand learning progress
+5. **Compare strategies** - Safe vs risky exploration
+6. **Implement improvements** - Double DQN, Dueling DQN
+
+### Advanced Level
+7. **Train Flappy Bird** - Full training session
+8. **Optimize network architecture** - Experiment with layer sizes
+9. **Create custom environments** - Apply DQN to new games
+
+## 📈 Expected Results
+
+### CartPole Training
+- **Episodes 0-100**: Random performance (~20 points)
+- **Episodes 100-300**: Rapid improvement
+- **Episodes 300+**: Consistent high scores (500 points)
+
+### Flappy Bird Training
+- **Hours 1-4**: Learning basic flight
+- **Hours 4-12**: Occasional pipe navigation
+- **Hours 12+**: Consistent multi-pipe performance
+
+## 🔧 Troubleshooting
+
+### Training Not Improving?
+- Check epsilon decay - too fast = no exploration
+- Increase replay memory size
+- Adjust learning rate (try 0.0001 or 0.01)
+- Verify environment rewards
+
+### Agent Playing Poorly?
+- Ensure model is loaded correctly
+- Check if training completed successfully
+- Try different saved models in `runs/` folder
+
+## 🤝 Contributing
+
+This is a workshop project! Feel free to:
+- Experiment with different network architectures
+- Try new environments
+- Implement DQN variants (Double DQN, Dueling DQN, etc.)
+- Share your training results
+
+## 📚 Further Learning
+
+### Next Steps
+- **Double DQN**: Reduces overestimation bias
+- **Dueling DQN**: Separates value and advantage functions
+- **Prioritized Experience Replay**: Learn from important experiences first
+- **Rainbow DQN**: Combines multiple improvements
+
+### Resources
+- [Deep Q-Learning Paper](https://arxiv.org/abs/1312.5602)
+- [OpenAI Gymnasium Documentation](https://gymnasium.farama.org/)
+- [PyTorch RL Tutorial](https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html)
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+**Happy Learning! 🤖🎮**
+
+*Remember: The goal isn't just to train an AI that plays Flappy Bird, but to understand the principles of reinforcement learning that can be applied to countless real-world problems!*
