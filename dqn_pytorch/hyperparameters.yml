@@ -1,0 +1,115 @@
+cartpole1:
+  env_id: CartPole-v1
+  replay_memory_size: 100000
+  mini_batch_size: 64
+  epsilon_init: 1
+  epsilon_decay: 0.9995
+  epsilon_min: 0.01
+  network_sync_rate: 100
+  learning_rate_a: 0.001
+  discount_factor_g: 0.99
+  stop_on_reward: 100000
+  fc1_nodes: 128
+  enable_double_dqn: False
+  enable_dueling_dqn: True
+flappybird1:
+  env_id: FlappyBird-v0
+  replay_memory_size: 100000
+  mini_batch_size: 32
+  epsilon_init: 1
+  epsilon_decay: 0.99995
+  epsilon_min: 0.05
+  network_sync_rate: 10
+  learning_rate_a: 0.0001
+  discount_factor_g: 0.99
+  stop_on_reward: 100000
+  fc1_nodes: 512
+  env_make_params:
+    use_lidar: False
+  enable_double_dqn: True
+  enable_dueling_dqn: True
+
+flappybird4:
+  env_id: FlappyBird-v0
+  replay_memory_size: 200000          # mai multă memorie pentru experiențe
+  mini_batch_size: 64                 # batch mai mare pentru stabilitate
+  epsilon_init: 1
+  epsilon_decay: 0.995                # decay mai lent, să exploreze mai mult
+  epsilon_min: 0.01                   # epsilon minim mai mic pentru mai puțină explorare la final
+  network_sync_rate: 100              # sincronizare mai rară pentru stabilitate
+  learning_rate_a: 0.00025            # puțin mai mare, dar nu prea mult
+  discount_factor_g: 0.99             # rămâne
+  stop_on_reward: 100000              # rămâne mare ca să nu oprească devreme
+  fc1_nodes: 512                     # păstrăm rețeaua mare, important pentru mediu complex
+  env_make_params:
+    use_lidar: False
+  enable_double_dqn: True
+  enable_dueling_dqn: True
+
+flappybird4_risky:
+  env_id: FlappyBird-v0
+  replay_memory_size: 100000          
+  mini_batch_size: 128                
+  epsilon_init: 1
+  epsilon_decay: 0.99                
+  epsilon_min: 0.001                  
+  network_sync_rate: 50              
+  learning_rate_a: 0.001              
+  discount_factor_g: 0.95            
+  stop_on_reward: 100000              
+  fc1_nodes: 256                      
+  env_make_params:
+    use_lidar: False
+  enable_double_dqn: True            
+  enable_dueling_dqn: True
+ 
+flappybird4_safe:
+  env_id: FlappyBird-v0
+  replay_memory_size: 300000          
+  mini_batch_size: 32                
+  epsilon_init: 1
+  epsilon_decay: 0.9998            
+  epsilon_min: 0.05                
+  network_sync_rate: 2000          
+  learning_rate_a: 0.0001          
+  discount_factor_g: 0.99          
+  stop_on_reward: 100000              
+  fc1_nodes: 512                
+  env_make_params:
+    use_lidar: False
+  enable_double_dqn: False      
+  enable_dueling_dqn: False
+
+# Optimized configuration for risk comparison
+flappybird_comparison:
+  env_id: FlappyBird-v0
+  replay_memory_size: 150000          # Balanced memory size
+  mini_batch_size: 64                 # Good batch size for stable learning
+  epsilon_init: 1                     # Will be overridden by agents
+  epsilon_decay: 0.999                # Will be overridden by agents  
+  epsilon_min: 0.05                   # Will be overridden by agents
+  network_sync_rate: 50               # Frequent sync for faster learning
+  learning_rate_a: 0.0002             # Slightly higher for faster adaptation
+  discount_factor_g: 0.99             # Standard discount factor
+  stop_on_reward: 100000              # High ceiling
+  fc1_nodes: 512                      # Good network size
+  env_make_params:
+    use_lidar: False
+  enable_double_dqn: True
+  enable_dueling_dqn: True
+
+# Quick testing configuration
+cartpole_comparison:
+  env_id: CartPole-v1
+  replay_memory_size: 50000
+  mini_batch_size: 32
+  epsilon_init: 1                     # Will be overridden by agents
+  epsilon_decay: 0.995                # Will be overridden by agents
+  epsilon_min: 0.01                   # Will be overridden by agents
+  network_sync_rate: 25
+  learning_rate_a: 0.001
+  discount_factor_g: 0.99
+  stop_on_reward: 500                 # CartPole max reward
+  fc1_nodes: 128
+  enable_double_dqn: True
+  enable_dueling_dqn: True
